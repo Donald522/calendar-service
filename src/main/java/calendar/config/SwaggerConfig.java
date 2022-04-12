@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    @Bean
-    public OpenAPI springShopOpenAPI() {
-        return new OpenAPI()
-                .info(new Info().title("Calendar Service API")
-                        .description("Calendar Service sample application")
-                        .version("v0.0.1"));
-    }
+  @Bean
+  public OpenAPI springShopOpenAPI() {
+    return new OpenAPI()
+        .info(new Info().title("Calendar Service API")
+            .description("Calendar Service sample application")
+            .version("v0.0.1"));
+  }
 }

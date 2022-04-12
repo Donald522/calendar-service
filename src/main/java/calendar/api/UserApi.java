@@ -13,9 +13,9 @@ import java.util.Collection;
 @RequestMapping("/users")
 public interface UserApi {
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Object> createUser(@RequestBody UserDto userDto);
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Object> createUser(@RequestBody UserDto userDto);
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Collection<UserDto>> getAllUsers();
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Collection<UserDto>> getAllUsers();
 }

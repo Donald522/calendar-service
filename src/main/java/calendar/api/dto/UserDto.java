@@ -9,16 +9,16 @@ import lombok.Value;
 @Builder
 public class UserDto {
 
-    String name;
-    String surname;
-    String email;
+  String name;
+  String surname;
+  String email;
 
-    @JsonCreator
-    public UserDto(@JsonProperty(value = "name", required = true) String name,
-                   @JsonProperty(value = "surname", required = true) String surname,
-                   @JsonProperty(value = "email", required = true) String email) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-    }
+  @JsonCreator
+  public UserDto(@JsonProperty(value = "name", required = true) String name,
+                 @JsonProperty(value = "surname", required = true) String surname,
+                 @JsonProperty(value = "email", required = true) String email) {
+    this.name = name;
+    this.surname = surname;
+    this.email = email;
+  }
 }
