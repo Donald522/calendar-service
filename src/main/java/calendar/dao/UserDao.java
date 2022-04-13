@@ -2,9 +2,11 @@ package calendar.dao;
 
 import calendar.service.model.User;
 
+import java.util.Optional;
+
 public interface UserDao {
 
   void create(User user);
 
-  User findOne(String email);
+  Optional<User> findOne(String email);
 }

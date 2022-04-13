@@ -13,7 +13,7 @@ class UserServiceImplSpec extends Specification {
   def "Should return nothing for successfully created user"() {
     given:
     def dao = Stub(UserDao) {
-      findOne(_) >> null
+      findOne(_) >> Optional.empty()
     }
     def service = new UserServiceImpl(dao)
 
@@ -39,7 +39,7 @@ class UserServiceImplSpec extends Specification {
         .build()
 
     def dao = Stub(UserDao) {
-      findOne(user.email) >> user
+      findOne(user.email) >> Optional.of(user)
     }
     def service = new UserServiceImpl(dao)
 
