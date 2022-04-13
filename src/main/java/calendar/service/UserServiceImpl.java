@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void create(User user) {
+  public long create(User user) {
     Optional<User> one;
     log.info("Creating new User: {}", user);
     try {
@@ -35,8 +35,9 @@ public class UserServiceImpl implements UserService {
       throw new AlreadyExistsException(String.format("Login %s already exists", user.getEmail()));
     }
     try {
-      userDao.create(user);
-      log.info("User {} created", user);
+      long id = userDao.create(user);
+      log.info("User {} created with id = {}", user, id);
+      return id;
     } catch (Exception e) {
       log.error("Failed to create user {}", user, e);
       throw new InternalServiceException(String.format(

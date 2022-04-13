@@ -4,5 +4,5 @@ import calendar.service.model.User;
 
 public interface UserService {
 
-  void create(User user);
+  long create(User user);
 }

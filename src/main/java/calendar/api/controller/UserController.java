@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-
-import static java.util.Collections.emptyList;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,12 +19,7 @@ public class UserController implements UserApi {
 
   @Override
   public ResponseEntity<Object> createUser(UserDto userDto) {
-    userService.create(converter.toModel(userDto));
-    return ResponseEntity.ok().build();
-  }
-
-  @Override
-  public ResponseEntity<Collection<UserDto>> getAllUsers() {
-    return ResponseEntity.ok(emptyList());
+    long id = userService.create(converter.toModel(userDto));
+    return ResponseEntity.created(URI.create(String.format("/users/%s", id))).build();
   }
 }
