@@ -1,6 +1,7 @@
 package calendar.dao;
 
 import calendar.service.model.Meeting;
+import calendar.service.model.MeetingResponse;
 import calendar.service.model.MeetingSummary;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +59,7 @@ public class H2CalendarDao implements CalendarDao {
   }
 
   private void storeCalendarEvents(Meeting meeting) {
-    String insertCalendarSql = "insert into CALENDAR (" +
-        "meeting_id, " +
-        "user_email, " +
-        "meeting_title, " +
-        "from_time, " +
-        "to_time) values (?, ?, ?, ?, ?)";
+    String insertCalendarSql = "insert into CALENDAR (meeting_id, user_email) values (?, ?)";
 
     List<String> attendees = Stream.concat(
         meeting.getParticipants().stream(), Stream.of(meeting.getOrganizer()))
@@ -75,9 +71,6 @@ public class H2CalendarDao implements CalendarDao {
         String participant = attendees.get(i);
         ps.setLong(1, meeting.getId());
         ps.setString(2, participant);
-        ps.setString(3, meeting.getTitle());
-        ps.setTimestamp(4, Timestamp.valueOf(meeting.getFromTime()));
-        ps.setTimestamp(5, Timestamp.valueOf(meeting.getToTime()));
       }
 
       @Override
@@ -90,15 +83,27 @@ public class H2CalendarDao implements CalendarDao {
   @Override
   public Collection<MeetingSummary> getUserCalendar(String user, LocalDateTime from, LocalDateTime to) {
     String selectUSerCalendarSql =
-        "select " +
-        "  meeting_id, " +
-        "  meeting_title, " +
-        "  from_time, " +
-        "  to_time " +
-        "from calendar " +
-        "where user_email = ? " +
-          "and from_time < ? " +
-          "and to_time > ?";
+        "select c.meeting_id, \n" +
+            "   m.meeting_title, \n" +
+            "   m.organizer,\n" +
+            "   m.from_time,\n" +
+            "   m.to_time,\n" +
+            "   count(*)\n" +
+            "from calendar c, meetings m\n" +
+            "where 1=1\n" +
+            "  and c.user_email = ?\n" +
+            "  and from_time < ?\n" +
+            "  and to_time > ?\n" +
+            "  and not exists (select 1 from calendar cc\n" +
+            "                  where cc.meeting_id = c.meeting_id\n" +
+            "                    and cc.user_email = c.user_email\n" +
+            "                    and cc.response = 'DECLINED')\n" +
+            "  and c.meeting_id = m.id\n" +
+            "group by c.meeting_id, \n" +
+            "         m.meeting_title, \n" +
+            "         m.organizer,\n" +
+            "         m.from_time,\n" +
+            "         m.to_time\n;";
 
     return calendarJdbcTemplate.query(selectUSerCalendarSql, rs -> {
       ImmutableList.Builder<MeetingSummary> meetingSummaryBuilder = ImmutableList.builder();
@@ -145,12 +150,15 @@ public class H2CalendarDao implements CalendarDao {
   }
 
   @Override
-  public void acceptMeeting(String user, long meetingId) {
+  public void respondToMeeting(MeetingResponse meetingResponse) {
+    String insertResponseSql = "insert into CALENDAR (" +
+        "meeting_id, " +
+        "user_email, " +
+        "response) values (?, ?, ?)";
 
-  }
-
-  @Override
-  public void rejectMeeting(String user, long meetingId) {
-
+    calendarJdbcTemplate.update(insertResponseSql,
+        meetingResponse.getMeetingId(),
+        meetingResponse.getUser(),
+        meetingResponse.getResponse().name());
   }
 }

@@ -1,7 +1,7 @@
 package calendar.api.controller
 
 import calendar.api.dto.UserDto
-import calendar.api.handler.UserControllerHandler
+import calendar.api.handler.CalendarServiceHandler
 import calendar.service.UserService
 import calendar.service.converter.UserConverter
 import calendar.service.exception.AlreadyExistsException
@@ -26,7 +26,7 @@ class UserControllerSpec extends Specification {
     def controller = new UserController(converter, service)
     def server = MockMvcBuilders
         .standaloneSetup(controller)
-        .setControllerAdvice(UserControllerHandler)
+        .setControllerAdvice(CalendarServiceHandler)
         .build()
 
     and:
@@ -63,7 +63,7 @@ class UserControllerSpec extends Specification {
     def controller = new UserController(converter, service)
     def server = MockMvcBuilders
         .standaloneSetup(controller)
-        .setControllerAdvice(UserControllerHandler)
+        .setControllerAdvice(CalendarServiceHandler)
         .build()
 
     and:
@@ -95,7 +95,7 @@ class UserControllerSpec extends Specification {
     def controller = new UserController(converter, service)
     def server = MockMvcBuilders
         .standaloneSetup(controller)
-        .setControllerAdvice(UserControllerHandler)
+        .setControllerAdvice(CalendarServiceHandler)
         .build()
 
     and:

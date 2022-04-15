@@ -1,43 +1,43 @@
 {
   "name": "Kristina",
-  "surname": "D",
-  "email": "k.d@d.ru"
+  "surname": "Petrova",
+  "email": "kris.petrova@d.ru"
 }
 
 {
   "name": "Anton",
-  "surname": "T",
-  "email": "a.t@g.ru"
+  "surname": "Ivanov",
+  "email": "anton.ivanov@gm.ru"
 }
 
 {
   "name": "Victor",
-  "surname": "K",
-  "email": "v.k@y.ru"
+  "surname": "Kiselev",
+  "email": "victor.kis@y.ru"
 }
 
 
 {
   "title": "Standup",
-  "organizer": "k.d@d.ru",
+  "organizer": "kris.petrova@d.r",
   "fromTime": "2022-04-15 11:00",
   "toTime": "2022-04-15 12:30",
   "location": "",
   "message": "",
   "participants": [
-    "a.t.@g.ru",
-    "v.b.@g.ru"
+    "anton.ivanov@gm.ru",
+    "victor.kis@y.ru"
   ]
 }
 
 {
   "title": "Spring demo",
-  "organizer": "a.t@g.ru",
+  "organizer": "anton.ivanov@gm.ru",
   "fromTime": "2022-04-15 16:00",
   "toTime": "2022-04-15 16:30",
   "location": "",
   "message": "agenda",
   "participants": [
-    "v.b.@g.ru"
+    "victor.kis@y.ru"
   ]
 }

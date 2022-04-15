@@ -11,6 +11,7 @@ public class MeetingSummary {
 
   long meetingId;
   String title;
+  String organizer;
   LocalDateTime fromTime;
   LocalDateTime toTime;
 }
