@@ -89,18 +89,41 @@ public class H2CalendarDao implements CalendarDao {
 
   @Override
   public Collection<MeetingSummary> getUserCalendar(String user, LocalDateTime from, LocalDateTime to) {
-    return null;
+    String selectUSerCalendarSql =
+        "select " +
+        "  meeting_id, " +
+        "  meeting_title, " +
+        "  from_time, " +
+        "  to_time " +
+        "from calendar " +
+        "where user_email = ? " +
+          "and from_time < ? " +
+          "and to_time > ?";
+
+    return calendarJdbcTemplate.query(selectUSerCalendarSql, rs -> {
+      ImmutableList.Builder<MeetingSummary> meetingSummaryBuilder = ImmutableList.builder();
+      while (rs.next()) {
+        MeetingSummary meetingSummary = MeetingSummary.builder()
+            .meetingId(rs.getLong("meeting_id"))
+            .title(rs.getString("meeting_title"))
+            .fromTime(rs.getTimestamp("from_time").toLocalDateTime())
+            .toTime(rs.getTimestamp("to_time").toLocalDateTime())
+            .build();
+        meetingSummaryBuilder.add(meetingSummary);
+      }
+      return meetingSummaryBuilder.build();
+    }, user, to, from);
   }
 
   @Override
   public Meeting getMeetingDetails(long meetingId) {
-    String selectMeetingSql = "" +
+    String selectMeetingSql =
         "select " +
         "m.*, c.user_email\n" +
         "from meetings m, calendar c\n" +
         "where 1=1\n" +
-        "and m.id = 1\n" +
-        "and c.meeting_id = ?;";
+        "and c.meeting_id = m.id\n" +
+        "and m.id = ?;";
 
     return calendarJdbcTemplate.query(selectMeetingSql, rs -> {
       ImmutableList.Builder<String> participantListBuilder = ImmutableList.builder();

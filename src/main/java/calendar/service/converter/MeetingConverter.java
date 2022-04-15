@@ -2,23 +2,22 @@ package calendar.service.converter;
 
 import calendar.api.dto.MeetingDto;
 import calendar.service.model.Meeting;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Component
+@RequiredArgsConstructor
 public class MeetingConverter {
 
-  private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+  private final DateTimeConverter dateTimeConverter;
 
   public Meeting toModel(MeetingDto dto) {
     return Meeting.builder()
         .title(dto.getTitle())
         .organizer(dto.getOrganizer())
         .location(dto.getLocation())
-        .fromTime(LocalDateTime.parse(dto.getFromTime(), formatter))
-        .toTime(LocalDateTime.parse(dto.getToTime(), formatter))
+        .fromTime(dateTimeConverter.parseDate(dto.getFromTime()))
+        .toTime(dateTimeConverter.parseDate(dto.getToTime()))
         .message(dto.getMessage())
         .participants(dto.getParticipants())
         .build();
@@ -29,8 +28,8 @@ public class MeetingConverter {
         .title(model.getTitle())
         .organizer(model.getOrganizer())
         .location(model.getLocation())
-        .fromTime(model.getFromTime().format(formatter))
-        .toTime(model.getToTime().format(formatter))
+        .fromTime(dateTimeConverter.formatDate(model.getFromTime()))
+        .toTime(dateTimeConverter.formatDate(model.getToTime()))
         .message(model.getMessage())
         .participants(model.getParticipants())
         .build();
