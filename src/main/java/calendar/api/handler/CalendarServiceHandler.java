@@ -1,6 +1,7 @@
 package calendar.api.handler;
 
 import calendar.service.exception.AlreadyExistsException;
+import calendar.service.exception.AuthException;
 import calendar.service.exception.BadRequestException;
 import calendar.service.exception.InternalServiceException;
 import org.springframework.http.HttpHeaders;
@@ -27,5 +28,10 @@ public class CalendarServiceHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(value = BadRequestException.class)
   protected ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
     return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+  }
+
+  @ExceptionHandler(value = AuthException.class)
+  protected ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
+    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
   }
 }

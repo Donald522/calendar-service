@@ -122,6 +122,7 @@ public class H2CalendarDao implements CalendarDao {
 
   @Override
   public Meeting getMeetingDetails(long meetingId) {
+    // todo: defect with ACCEPTED and DECLINED meetings. Users are duplicated in participant list
     String selectMeetingSql =
         "select " +
         "m.*, c.user_email\n" +

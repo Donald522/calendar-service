@@ -20,19 +20,20 @@ public class H2UserDao implements UserDao {
 
   @Override
   public long create(User user) {
-    String insertSql = "insert into USERS (id, name, surname, email) values (users_seq.nextval, ?, ?, ?)";
+    String insertSql = "insert into USERS (id, name, surname, email, password) values (users_seq.nextval, ?, ?, ?, ?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
     String id_column = "id";
 
     calendarJdbcTemplate.update(con -> {
-          PreparedStatement ps = con.prepareStatement(insertSql, new String[]{id_column});
-          ps.setString(1, user.getName());
-          ps.setString(2, user.getSurname());
-          ps.setString(3, user.getEmail());
-          return ps;
-        }, keyHolder);
+      PreparedStatement ps = con.prepareStatement(insertSql, new String[]{id_column});
+      ps.setString(1, user.getName());
+      ps.setString(2, user.getSurname());
+      ps.setString(3, user.getEmail());
+      ps.setString(4, user.getPassword());
+      return ps;
+    }, keyHolder);
 
     Integer id = (Integer) keyHolder.getKeys().get(id_column);
     return id.longValue();
@@ -55,6 +56,7 @@ public class H2UserDao implements UserDao {
         .name(rs.getString("name"))
         .surname(rs.getString("surname"))
         .email(rs.getString("email"))
+        .password(rs.getString("password"))
         .build();
   }
 }

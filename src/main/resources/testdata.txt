@@ -1,13 +1,15 @@
 {
   "name": "Kristina",
   "surname": "Petrova",
-  "email": "kris.petrova@d.ru"
+  "email": "kris.petrova@d.ru",
+  "password": "asd123"
 }
 
 {
-  "name": "Anton",
-  "surname": "Ivanov",
-  "email": "anton.ivanov@gm.ru"
+  "name": "anton",
+  "surname": "ivanov",
+  "email": "anton.ivanov@g.ru",
+  "password": "qwerty"
 }
 
 {
