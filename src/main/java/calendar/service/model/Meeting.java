@@ -19,5 +19,6 @@ public class Meeting {
   LocalDateTime fromTime;
   LocalDateTime toTime;
   String message;
+  Visibility visibility;
   Collection<String> participants;
 }

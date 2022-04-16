@@ -9,9 +9,9 @@ public interface CalendarService {
 
   long createMeeting(Meeting meeting);
 
-  Meeting getMeeting(long meetingId);
+  Meeting getMeeting(String requestor, long meetingId);
 
-  Collection<MeetingSummary> getCalendarForUser(String user, LocalDateTime fromTime, LocalDateTime toTime);
+  Collection<MeetingSummary> getCalendarForUser(String requestor, String user, LocalDateTime fromTime, LocalDateTime toTime);
 
   void respondToMeeting(MeetingResponse meetingResponse);
 

@@ -2,7 +2,7 @@ package calendar.dao;
 
 import calendar.service.model.Meeting;
 import calendar.service.model.MeetingResponse;
-import calendar.service.model.MeetingSummary;
+import calendar.service.model.Visibility;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +33,8 @@ public class H2CalendarDao implements CalendarDao {
         "to_time, " +
         "location, " +
         "organizer, " +
-        "message) values (meetings_seq.nextval, ?, ?, ?, ?, ?, ?)";
+        "visibility, " +
+        "message) values (meetings_seq.nextval, ?, ?, ?, ?, ?, ?, ?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -48,7 +47,8 @@ public class H2CalendarDao implements CalendarDao {
       ps.setTimestamp(3, Timestamp.valueOf(meeting.getToTime()));
       ps.setString(4, meeting.getLocation());
       ps.setString(5, meeting.getOrganizer());
-      ps.setString(6, meeting.getMessage());
+      ps.setString(6, meeting.getVisibility().name());
+      ps.setString(7, meeting.getMessage());
       return ps;
     }, keyHolder);
 
@@ -57,6 +57,21 @@ public class H2CalendarDao implements CalendarDao {
     storeCalendarEvents(meeting.withId(meetingId));
 
     return meetingId;
+  }
+
+  @Override
+  public boolean isPermitted(String user, long meetingId) {
+    String sql =
+        "select count(*) as cnt\n" +
+            "from calendar c, meetings m\n" +
+            "where 1=1\n" +
+            "and c.meeting_id = m.id\n" +
+            "and m.id = ?\n" +
+            "and (c.user_email = ? or m.visibility = 'PUBLIC')";
+    Long count = calendarJdbcTemplate.queryForObject(sql,
+        (rs, rowNum) -> rs.getLong("cnt"),
+        meetingId, user);
+    return count != null && count > 0;
   }
 
   private void storeCalendarEvents(Meeting meeting) {
@@ -82,46 +97,6 @@ public class H2CalendarDao implements CalendarDao {
   }
 
   @Override
-  public Collection<MeetingSummary> getUserCalendar(String user, LocalDateTime from, LocalDateTime to) {
-    String selectUSerCalendarSql =
-        "select c.meeting_id, \n" +
-            "   m.meeting_title, \n" +
-            "   m.organizer,\n" +
-            "   m.from_time,\n" +
-            "   m.to_time,\n" +
-            "   count(*)\n" +
-            "from calendar c, meetings m\n" +
-            "where 1=1\n" +
-            "  and c.user_email = ?\n" +
-            "  and from_time < ?\n" +
-            "  and to_time > ?\n" +
-            "  and not exists (select 1 from calendar cc\n" +
-            "                  where cc.meeting_id = c.meeting_id\n" +
-            "                    and cc.user_email = c.user_email\n" +
-            "                    and cc.response = 'DECLINED')\n" +
-            "  and c.meeting_id = m.id\n" +
-            "group by c.meeting_id, \n" +
-            "         m.meeting_title, \n" +
-            "         m.organizer,\n" +
-            "         m.from_time,\n" +
-            "         m.to_time\n;";
-
-    return calendarJdbcTemplate.query(selectUSerCalendarSql, rs -> {
-      ImmutableList.Builder<MeetingSummary> meetingSummaryBuilder = ImmutableList.builder();
-      while (rs.next()) {
-        MeetingSummary meetingSummary = MeetingSummary.builder()
-            .meetingId(rs.getLong("meeting_id"))
-            .title(rs.getString("meeting_title"))
-            .fromTime(rs.getTimestamp("from_time").toLocalDateTime())
-            .toTime(rs.getTimestamp("to_time").toLocalDateTime())
-            .build();
-        meetingSummaryBuilder.add(meetingSummary);
-      }
-      return meetingSummaryBuilder.build();
-    }, user, to, from);
-  }
-
-  @Override
   public Optional<Meeting> getMeetingDetails(long meetingId) {
     String selectMeetingSql =
         "select distinct m.*, c.user_email\n" +
@@ -140,15 +115,16 @@ public class H2CalendarDao implements CalendarDao {
       if (!rs.next()) {
         return Optional.empty();
       } else {
+        meetingBuilder.id(rs.getLong("id"));
+        meetingBuilder.title(rs.getString("meeting_title"));
+        meetingBuilder.organizer(rs.getString("organizer"));
+        meetingBuilder.location(rs.getString("location"));
+        meetingBuilder.fromTime(rs.getTimestamp("from_time").toLocalDateTime());
+        meetingBuilder.toTime(rs.getTimestamp("to_time").toLocalDateTime());
+        meetingBuilder.visibility(Visibility.valueOf(rs.getString("visibility")));
+        meetingBuilder.message(rs.getString("message"));
         do {
           participantListBuilder.add(rs.getString("user_email"));
-          meetingBuilder.id(rs.getLong("id"));
-          meetingBuilder.title(rs.getString("meeting_title"));
-          meetingBuilder.organizer(rs.getString("organizer"));
-          meetingBuilder.location(rs.getString("location"));
-          meetingBuilder.fromTime(rs.getTimestamp("from_time").toLocalDateTime());
-          meetingBuilder.toTime(rs.getTimestamp("to_time").toLocalDateTime());
-          meetingBuilder.message(rs.getString("message"));
         }
         while (rs.next());
         return Optional.of(meetingBuilder

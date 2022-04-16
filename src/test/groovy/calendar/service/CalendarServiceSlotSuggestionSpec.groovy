@@ -34,13 +34,14 @@ class CalendarServiceSlotSuggestionSpec extends Specification {
     and:
     def minimalSlotMinutes = 15
     def userDao = Stub(UserDao)
-    def calendarDao = Stub(CalendarDao) {
-      getUserCalendar(user, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2]
+    def calendarDao = Stub(CalendarDao)
+    def userCalendarAdapter = Stub(UserCalendarAdapter) {
+      getRestrictedCalendar(user, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2]
     }
     def currentDateProvider = Stub(CurrentDateProvider) {
       getNow() >> LocalDateTime.parse('2022-04-16 10:00', formatter)
     }
-    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, currentDateProvider)
+    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, userCalendarAdapter, currentDateProvider)
 
     when:
     def slotRequest = MeetingSlotRequest.builder()
@@ -102,15 +103,16 @@ class CalendarServiceSlotSuggestionSpec extends Specification {
     and:
     def minimalSlotMinutes = 15
     def userDao = Stub(UserDao)
-    def calendarDao = Stub(CalendarDao) {
-      getUserCalendar(user1, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2]
-      getUserCalendar(user2, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary3, mSummary4, mSummary5]
-      getUserCalendar(user3, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary6, mSummary7]
+    def calendarDao = Stub(CalendarDao)
+    def userCalendarAdapter = Stub(UserCalendarAdapter) {
+      getRestrictedCalendar(user1, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2]
+      getRestrictedCalendar(user2, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary3, mSummary4, mSummary5]
+      getRestrictedCalendar(user3, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary6, mSummary7]
     }
     def currentDateProvider = Stub(CurrentDateProvider) {
       getNow() >> LocalDateTime.parse('2022-04-16 10:00', formatter)
     }
-    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, currentDateProvider)
+    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, userCalendarAdapter, currentDateProvider)
 
     when:
     def slotRequest = MeetingSlotRequest.builder()
@@ -157,14 +159,15 @@ class CalendarServiceSlotSuggestionSpec extends Specification {
     and:
     def minimalSlotMinutes = 15
     def userDao = Stub(UserDao)
-    def calendarDao = Stub(CalendarDao) {
-      getUserCalendar(user1, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2, mSummary3]
-      getUserCalendar(user2, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary4]
+    def calendarDao = Stub(CalendarDao)
+    def userCalendarAdapter = Stub(UserCalendarAdapter) {
+      getRestrictedCalendar(user1, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary1, mSummary2, mSummary3]
+      getRestrictedCalendar(user2, _ as LocalDateTime, _ as LocalDateTime) >> [mSummary4]
     }
     def currentDateProvider = Stub(CurrentDateProvider) {
       getNow() >> LocalDateTime.parse('2022-04-16 10:00', formatter)
     }
-    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, currentDateProvider)
+    def service = new CalendarServiceImpl(minimalSlotMinutes, calendarDao, userDao, userCalendarAdapter, currentDateProvider)
 
     when:
     def slotRequest = MeetingSlotRequest.builder()

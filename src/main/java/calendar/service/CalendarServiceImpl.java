@@ -5,6 +5,7 @@ import calendar.dao.UserDao;
 import calendar.service.exception.BadRequestException;
 import calendar.service.exception.InternalServiceException;
 import calendar.service.exception.NotFoundException;
+import calendar.service.exception.PermissionException;
 import calendar.service.model.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,18 @@ public class CalendarServiceImpl implements CalendarService {
   private final long minimalTimeSlot;
   private final CalendarDao calendarDao;
   private final UserDao userDao;
+  private final UserCalendarAdapter userCalendarAdapter;
   private final CurrentDateProvider currentDateProvider;
 
   @Autowired
   public CalendarServiceImpl(@Value("${calendar.minimal.meeting.slot.minutes}") long minimalTimeSlot,
-                             CalendarDao calendarDao, UserDao userDao, CurrentDateProvider currentDateProvider) {
+                             CalendarDao calendarDao, UserDao userDao,
+                             UserCalendarAdapter userCalendarAdapter,
+                             CurrentDateProvider currentDateProvider) {
     this.minimalTimeSlot = minimalTimeSlot;
     this.calendarDao = calendarDao;
     this.userDao = userDao;
+    this.userCalendarAdapter = userCalendarAdapter;
     this.currentDateProvider = currentDateProvider;
   }
 
@@ -64,9 +69,22 @@ public class CalendarServiceImpl implements CalendarService {
 
   @Override
   @Transactional
-  public Meeting getMeeting(long meetingId) {
+  public Meeting getMeeting(String requestor, long meetingId) {
     log.info("Retrieving details for meeting [{}]", meetingId);
     Optional<Meeting> meeting;
+    boolean permitted;
+    try {
+      permitted = calendarDao.isPermitted(requestor, meetingId);
+    } catch (Exception e) {
+      log.error("Cannot retrieve meeting with id = {}", meetingId, e);
+      throw new InternalServiceException(String.format(
+          "Cannot retrieve meeting with id = %s", meetingId), e);
+    }
+    if (!permitted) {
+      throw new PermissionException(String.format(
+          "User [%s] is not permitted to view meeting [%s]", requestor, meetingId
+      ));
+    }
     try {
       meeting = calendarDao.getMeetingDetails(meetingId);
     } catch (Exception e) {
@@ -81,14 +99,28 @@ public class CalendarServiceImpl implements CalendarService {
 
   @Override
   @Transactional
-  public Collection<MeetingSummary> getCalendarForUser(String user, LocalDateTime fromTime, LocalDateTime toTime) {
-    log.info("Retrieving calendar for User [{}] from [{}] to [{}]", user, fromTime, toTime);
-    if (userDao.findOne(user).isEmpty()) {
+  public Collection<MeetingSummary> getCalendarForUser(String requestor, String user,
+                                                       LocalDateTime fromTime, LocalDateTime toTime) {
+    log.info("User [{}] requested calendar for User [{}] from [{}] to [{}]",
+        requestor, user, fromTime, toTime);
+    Optional<User> one;
+    try {
+      one = userDao.findOne(user);
+    } catch (Exception e) {
+      log.error("Cannot retrieve calendar for user {}", user, e);
+      throw new InternalServiceException(String.format(
+          "Cannot retrieve calendar for user %s", user), e);
+    }
+    if (one.isEmpty()) {
       log.warn("User [{}] not found", user);
       throw new NotFoundException(String.format("User %s not found", user));
     }
     try {
-      return calendarDao.getUserCalendar(user, fromTime, toTime);
+      if (user.equals(requestor)) {
+        return userCalendarAdapter.getPersonalCalendar(user, fromTime, toTime);
+      } else {
+        return userCalendarAdapter.getRestrictedCalendar(user, fromTime, toTime);
+      }
     } catch (Exception e) {
       log.error("Cannot retrieve calendar for user {}", user, e);
       throw new InternalServiceException(String.format(
@@ -131,7 +163,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         for (String participant : slotRequest.getParticipants()) {
           TreeMap<LocalDateTime, LocalDateTime> participantBusySlots = new TreeMap<>();
-          Collection<MeetingSummary> userCalendar = calendarDao.getUserCalendar(participant, from, to);
+          Collection<MeetingSummary> userCalendar = userCalendarAdapter.getRestrictedCalendar(participant, from, to);
           userCalendar.forEach(ms -> participantBusySlots.put(ms.getFromTime(), ms.getToTime()));
           participantsBusySlots.add(participantBusySlots);
         }

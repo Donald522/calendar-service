@@ -21,6 +21,7 @@ create table if not exists meetings (
   to_time timestamp not null,
   location varchar(255),
   organizer varchar(255) not null,
+  visibility varchar(255) not null default 'PUBLIC',
   message clob
 );
 

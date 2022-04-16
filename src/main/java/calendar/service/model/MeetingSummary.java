@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class MeetingSummary {
 
-  long meetingId;
+  Long meetingId;
   String title;
   String organizer;
   LocalDateTime fromTime;

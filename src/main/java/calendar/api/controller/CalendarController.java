@@ -9,6 +9,8 @@ import calendar.service.model.MeetingSummary;
 import calendar.service.model.TimeSlot;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -38,16 +40,21 @@ public class CalendarController implements CalendarApi {
 
   @Override
   public ResponseEntity<MeetingDto> getMeetingDetails(Long meetingId) {
-    Meeting meeting = calendarService.getMeeting(meetingId);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    Meeting meeting = calendarService.getMeeting(authentication.getName(), meetingId);
     return ResponseEntity.ok(meetingConverter.toDto(meeting));
   }
 
   @Override
   public ResponseEntity<Collection<MeetingSummaryDto>> getCalendarForUser(String user, String fromTime, String toTime) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
     LocalDateTime from = parseOrDefault(fromTime, LocalDate.now().atTime(LocalTime.MIN));
     LocalDateTime to = parseOrDefault(toTime, LocalDate.now().atTime(LocalTime.MAX));
 
-    Collection<MeetingSummary> calendarForUser = calendarService.getCalendarForUser(user.trim(), from, to);
+    Collection<MeetingSummary> calendarForUser = calendarService.getCalendarForUser(
+        authentication.getName(), user.trim(), from, to);
 
     return ResponseEntity.ok(meetingSummaryConverter.toDto(calendarForUser));
   }

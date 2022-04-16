@@ -36,4 +36,9 @@ public class CalendarServiceHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
     return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
   }
+
+  @ExceptionHandler(value = PermissionException.class)
+  protected ResponseEntity<Object> handlePermissionException(PermissionException ex, WebRequest request) {
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+  }
 }

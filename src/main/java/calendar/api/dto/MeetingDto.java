@@ -17,6 +17,7 @@ public class MeetingDto {
   String fromTime;
   String toTime;
   String message;
+  String visibility;
   Collection<String> participants;
 
   @JsonCreator
@@ -26,6 +27,7 @@ public class MeetingDto {
                     @JsonProperty(value = "toTime", required = true) String toTime,
                     @JsonProperty(value = "location") String location,
                     @JsonProperty(value = "message") String message,
+                    @JsonProperty(value = "visibility", defaultValue = "public") String visibility,
                     @JsonProperty(value = "participants") Collection<String> participants) {
     this.title = title;
     this.organizer = organizer;
@@ -33,6 +35,7 @@ public class MeetingDto {
     this.toTime = toTime;
     this.location = location;
     this.message = message;
+    this.visibility = visibility;
     this.participants = participants;
   }
 }

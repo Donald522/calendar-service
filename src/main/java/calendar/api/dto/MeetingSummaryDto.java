@@ -1,22 +1,29 @@
 package calendar.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MeetingSummaryDto {
 
-  long meetingId;
+  Long meetingId;
+
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   String title;
+
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   String organizer;
+
   String fromTime;
   String toTime;
 
   @JsonCreator
-  public MeetingSummaryDto(@JsonProperty(value = "meetingId", required = true) long meetingId,
+  public MeetingSummaryDto(@JsonProperty(value = "meetingId", required = true) Long meetingId,
                            @JsonProperty(value = "title") String title,
                            @JsonProperty(value = "organizer") String organizer,
                            @JsonProperty(value = "fromTime", required = true) String fromTime,
