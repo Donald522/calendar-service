@@ -1,16 +1,12 @@
 package calendar.api.controller;
 
 import calendar.api.CalendarApi;
-import calendar.api.dto.MeetingDto;
-import calendar.api.dto.MeetingResponseDto;
-import calendar.api.dto.MeetingSummaryDto;
+import calendar.api.dto.*;
 import calendar.service.CalendarService;
-import calendar.service.converter.DateTimeConverter;
-import calendar.service.converter.MeetingConverter;
-import calendar.service.converter.MeetingResponseConverter;
-import calendar.service.converter.MeetingSummaryConverter;
+import calendar.service.converter.*;
 import calendar.service.model.Meeting;
 import calendar.service.model.MeetingSummary;
+import calendar.service.model.TimeSlot;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +26,8 @@ public class CalendarController implements CalendarApi {
   private final MeetingConverter meetingConverter;
   private final MeetingSummaryConverter meetingSummaryConverter;
   private final MeetingResponseConverter meetingResponseConverter;
+  private final MeetingSlotRequestConverter meetingSlotRequestConverter;
+  private final TimeSlotConverter timeSlotConverter;
   private final CalendarService calendarService;
 
   @Override
@@ -58,6 +56,12 @@ public class CalendarController implements CalendarApi {
   public ResponseEntity<Object> respondToMeeting(MeetingResponseDto responseDto) {
     calendarService.respondToMeeting(meetingResponseConverter.fromDto(responseDto));
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<TimeSlotDto> suggestMeetingSlot(MeetingSlotRequestDto meetingSlotRequestDto) {
+    TimeSlot timeSlot = calendarService.suggestMeetingSlot(meetingSlotRequestConverter.fromDto(meetingSlotRequestDto));
+    return ResponseEntity.ok(timeSlotConverter.toDto(timeSlot));
   }
 
   private LocalDateTime parseOrDefault(String date, LocalDateTime otherwise) {

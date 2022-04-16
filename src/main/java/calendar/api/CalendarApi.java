@@ -1,8 +1,6 @@
 package calendar.api;
 
-import calendar.api.dto.MeetingDto;
-import calendar.api.dto.MeetingResponseDto;
-import calendar.api.dto.MeetingSummaryDto;
+import calendar.api.dto.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +16,16 @@ public interface CalendarApi {
   @GetMapping(value = "/{meetingId}", produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<MeetingDto> getMeetingDetails(@PathVariable Long meetingId);
 
-  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<Collection<MeetingSummaryDto>> getCalendarForUser(@RequestParam String user,
+  @GetMapping(value = "/calendar/{user}", produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Collection<MeetingSummaryDto>> getCalendarForUser(@PathVariable String user,
                                                                    @RequestParam(required = false) String fromTime,
                                                                    @RequestParam(required = false) String toTime);
 
-  @PutMapping(value = "/response", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/response", consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<Object> respondToMeeting(@RequestBody MeetingResponseDto responseDto);
+
+  @GetMapping(value = "/suggestion",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<TimeSlotDto> suggestMeetingSlot(@RequestBody MeetingSlotRequestDto meetingSlotRequestDto);
 }
