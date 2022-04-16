@@ -68,6 +68,7 @@ public class H2CalendarDao implements CalendarDao {
             "and c.meeting_id = m.id\n" +
             "and m.id = ?\n" +
             "and (c.user_email = ? or m.visibility = 'PUBLIC')";
+
     Long count = calendarJdbcTemplate.queryForObject(sql,
         (rs, rowNum) -> rs.getLong("cnt"),
         meetingId, user);
