@@ -10,7 +10,8 @@ create table if not exists users (
 create table if not exists calendar (
   meeting_id varchar(255) not null,
   user_email varchar(255) not null,
-  response varchar(32) not null default 'TENTATIVE'
+  response varchar(32) not null default 'TENTATIVE',
+  constraint calendar_pk primary key (meeting_id, user_email, response)
 );
 
 create table if not exists meetings (

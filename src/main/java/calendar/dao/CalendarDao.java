@@ -6,6 +6,7 @@ import calendar.service.model.MeetingSummary;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface CalendarDao {
 
@@ -13,7 +14,7 @@ public interface CalendarDao {
 
   Collection<MeetingSummary> getUserCalendar(String user, LocalDateTime from, LocalDateTime to);
 
-  Meeting getMeetingDetails(long meetingId);
+  Optional<Meeting> getMeetingDetails(long meetingId);
 
   void respondToMeeting(MeetingResponse meetingResponse);
 }

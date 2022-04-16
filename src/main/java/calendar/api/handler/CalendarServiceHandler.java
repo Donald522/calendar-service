@@ -14,26 +14,26 @@ public class CalendarServiceHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(value = AlreadyExistsException.class)
   protected ResponseEntity<Object> handleConflict(AlreadyExistsException ex, WebRequest request) {
-    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.CONFLICT, request);
   }
 
   @ExceptionHandler(value = InternalServiceException.class)
   protected ResponseEntity<Object> handleInternalException(InternalServiceException ex, WebRequest request) {
-    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
   }
 
   @ExceptionHandler(value = BadRequestException.class)
   protected ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
-    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler(value = AuthException.class)
   protected ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
-    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
   }
 
   @ExceptionHandler(value = NotFoundException.class)
   protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
-    return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
   }
 }

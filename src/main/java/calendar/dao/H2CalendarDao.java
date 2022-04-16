@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,34 +122,39 @@ public class H2CalendarDao implements CalendarDao {
   }
 
   @Override
-  public Meeting getMeetingDetails(long meetingId) {
+  public Optional<Meeting> getMeetingDetails(long meetingId) {
     String selectMeetingSql =
         "select distinct m.*, c.user_email\n" +
-        "from meetings m, calendar c\n" +
-        "where 1=1\n" +
-        "  and c.meeting_id = m.id\n" +
-        "  and not exists (select 1 from calendar cc " +
-        "                   where cc.meeting_id=m.id " +
-        "                     and cc.user_email = c.user_email" +
-        "                     and cc.response = 'DECLINED')\n" +
-        "and m.id = ?;";
+            "from meetings m, calendar c\n" +
+            "where 1=1\n" +
+            "  and c.meeting_id = m.id\n" +
+            "  and not exists (select 1 from calendar cc " +
+            "                   where cc.meeting_id=m.id " +
+            "                     and cc.user_email = c.user_email" +
+            "                     and cc.response = 'DECLINED')\n" +
+            "and m.id = ?;";
 
     return calendarJdbcTemplate.query(selectMeetingSql, rs -> {
       ImmutableList.Builder<String> participantListBuilder = ImmutableList.builder();
       Meeting.MeetingBuilder meetingBuilder = Meeting.builder();
-      while (rs.next()) {
-        participantListBuilder.add(rs.getString("user_email"));
-        meetingBuilder.id(rs.getLong("id"));
-        meetingBuilder.title(rs.getString("meeting_title"));
-        meetingBuilder.organizer(rs.getString("organizer"));
-        meetingBuilder.location(rs.getString("location"));
-        meetingBuilder.fromTime(rs.getTimestamp("from_time").toLocalDateTime());
-        meetingBuilder.toTime(rs.getTimestamp("to_time").toLocalDateTime());
-        meetingBuilder.message(rs.getString("message"));
+      if (!rs.next()) {
+        return Optional.empty();
+      } else {
+        do {
+          participantListBuilder.add(rs.getString("user_email"));
+          meetingBuilder.id(rs.getLong("id"));
+          meetingBuilder.title(rs.getString("meeting_title"));
+          meetingBuilder.organizer(rs.getString("organizer"));
+          meetingBuilder.location(rs.getString("location"));
+          meetingBuilder.fromTime(rs.getTimestamp("from_time").toLocalDateTime());
+          meetingBuilder.toTime(rs.getTimestamp("to_time").toLocalDateTime());
+          meetingBuilder.message(rs.getString("message"));
+        }
+        while (rs.next());
+        return Optional.of(meetingBuilder
+            .participants(participantListBuilder.build())
+            .build());
       }
-      return meetingBuilder
-          .participants(participantListBuilder.build())
-          .build();
     }, meetingId);
   }
 
