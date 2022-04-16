@@ -2,6 +2,7 @@ package calendar.service;
 
 import calendar.dao.CalendarDao;
 import calendar.service.exception.InternalServiceException;
+import calendar.service.exception.NotFoundException;
 import calendar.service.model.Meeting;
 import calendar.service.model.MeetingResponse;
 import calendar.service.model.MeetingSummary;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 @Log4j2
 @Component
@@ -36,7 +38,9 @@ public class CalendarServiceImpl implements CalendarService {
   @Transactional
   public Meeting getMeeting(long meetingId) {
     try {
-      return calendarDao.getMeetingDetails(meetingId);
+      return Optional.ofNullable(calendarDao.getMeetingDetails(meetingId))
+          .orElseThrow(() ->
+              new NotFoundException(String.format("Meeting with id = [%s] was not found", meetingId)));
     } catch (Exception e) {
       log.error("Cannot retrieve meeting with id = {}", meetingId, e);
       throw new InternalServiceException(String.format(

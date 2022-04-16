@@ -122,13 +122,15 @@ public class H2CalendarDao implements CalendarDao {
 
   @Override
   public Meeting getMeetingDetails(long meetingId) {
-    // todo: defect with ACCEPTED and DECLINED meetings. Users are duplicated in participant list
     String selectMeetingSql =
-        "select " +
-        "m.*, c.user_email\n" +
+        "select distinct m.*, c.user_email\n" +
         "from meetings m, calendar c\n" +
         "where 1=1\n" +
-        "and c.meeting_id = m.id\n" +
+        "  and c.meeting_id = m.id\n" +
+        "  and not exists (select 1 from calendar cc " +
+        "                   where cc.meeting_id=m.id " +
+        "                     and cc.user_email = c.user_email" +
+        "                     and cc.response = 'DECLINED')\n" +
         "and m.id = ?;";
 
     return calendarJdbcTemplate.query(selectMeetingSql, rs -> {
