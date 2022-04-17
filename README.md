@@ -25,6 +25,8 @@ Application has couple of settings
 -From IDE:
 Main class is [CalendarServiceApplication](src/main/java/calendar/app/CalendarServiceApplication.java)
 
+H2 database works in persistence mode, data is not loss between app start-stop. 
+
 #### Call endpoints
 - Swagger UI is available at http://localhost:8080/swagger-ui.html
 - Postman (preferable since Swagger has its defects)
