@@ -110,11 +110,21 @@ Supported responses:
 
 For repeatable meetings it is possible to respond either to all meetings at once or to particular meeting from series.
 
-Input data example:
+Input data example to decline particular meeting:
 ```json
 {
   "meetingId": 1,
   "meetingSubId": 3,
+  "user": "petr.petrov@y.ru",
+  "response": "DECLINED"
+}
+```
+
+Input data example to decline the whole series:
+```json
+{
+  "meetingId": 1,
+  "meetingSubId": -1,
   "user": "petr.petrov@y.ru",
   "response": "DECLINED"
 }
