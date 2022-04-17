@@ -144,7 +144,8 @@ Only 'TENTATIVE' and 'ACCEPTED' meetings are subject to be in user's calendar.
 In case of PRIVATE meeting is in user's calendar, its details are not shown if calendar was requested by someone else 
 and not by user himself. In this case only meeting time interval is shown. Example:
 ```json
-{
+[
+    {
         "meetingId": 3,
         "meetingSubId": 1,
         "title": "Spring Demo",
