@@ -23,7 +23,7 @@ Application has couple of settings
 
 #### Start application
 -From IDE:
-Main class is [CalendarServiceApplication](src/test/groovy/calendar/service/CalendarServiceImplSpec.groovy)
+Main class is [CalendarServiceApplication](src/main/java/calendar/app/CalendarServiceApplication.java)
 
 #### Call endpoints
 - Swagger UI is available at http://localhost:8080/swagger-ui.html
