@@ -13,7 +13,8 @@ public interface UserCalendarProvider {
     ImmutableList.Builder<MeetingSummary> meetingSummaryBuilder = ImmutableList.builder();
     while (rs.next()) {
       MeetingSummary meetingSummary = MeetingSummary.builder()
-          .meetingId(rs.getLong("meeting_id"))
+          .meetingId(rs.getLong("id"))
+          .meetingSubId(rs.getLong("sub_id"))
           .title(rs.getString("meeting_title"))
           .organizer(rs.getString("organizer"))
           .fromTime(rs.getTimestamp("from_time").toLocalDateTime())

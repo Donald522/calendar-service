@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class MeetingSummary {
 
   Long meetingId;
+  Long meetingSubId;
   String title;
   String organizer;
   LocalDateTime fromTime;

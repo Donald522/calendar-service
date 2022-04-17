@@ -2,20 +2,24 @@
     <users/>
     <meetings
             id="1"
+            sub_id="1"
             meeting_title="Standup"
             organizer="dart.vader@imp.com"
             location="Endor"
             from_time="1983-05-25 12:00:00"
             to_time="1983-05-25 12:30:00"
-            visibility="PRIVATE"/>
+            visibility="PRIVATE"
+            recurrence="NONE"/>
     <meetings
             id="2"
+            sub_id="1"
             meeting_title="Celebration"
             organizer="ewok.king@mi.ru"
             location="Endor"
             from_time="1983-05-25 16:00:00"
             to_time="1983-05-25 20:00:00"
-            visibility="PUBLIC"/>
+            visibility="PUBLIC"
+            recurrence="NONE"/>
 
     <calendar
             meeting_id="1"

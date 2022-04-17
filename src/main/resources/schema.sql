@@ -8,21 +8,25 @@ create table if not exists users (
 );
 
 create table if not exists calendar (
-  meeting_id varchar(255) not null,
+  meeting_id bigint not null,
+  meeting_sub_id bigint not null default -1,
   user_email varchar(255) not null,
   response varchar(32) not null default 'TENTATIVE',
-  constraint calendar_pk primary key (meeting_id, user_email, response)
+  constraint calendar_pk primary key (meeting_id, meeting_sub_id, user_email, response)
 );
 
 create table if not exists meetings (
-  id bigint not null primary key,
+  id bigint not null,
+  sub_id bigint not null,
   meeting_title varchar(255),
   from_time timestamp not null,
   to_time timestamp not null,
   location varchar(255),
   organizer varchar(255) not null,
   visibility varchar(255) not null default 'PUBLIC',
-  message clob
+  recurrence varchar(255) not null default 'NONE',
+  message clob,
+  constraint meeting_pk primary key (id, sub_id)
 );
 
 create sequence if not exists users_seq;

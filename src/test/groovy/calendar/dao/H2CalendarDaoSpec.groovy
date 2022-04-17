@@ -2,6 +2,7 @@ package calendar.dao
 
 import calendar.configuration.CalendarDaoTestConfig
 import calendar.service.model.Meeting
+import calendar.service.model.Recurrence
 import calendar.service.model.Visibility
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener
 import com.github.springtestdbunit.annotation.DatabaseSetup
@@ -38,7 +39,7 @@ class H2CalendarDaoSpec extends Specification {
   }
 
   @DatabaseSetup(value = "classpath:database/clean_db.xml", connection = "dbUnitDatabaseConnection")
-  def "Should create meeting with calendar events"() {
+  def "Should create single meeting with calendar events"() {
     given:
     def meeting = Meeting.builder()
         .title('Potato day')
@@ -47,31 +48,100 @@ class H2CalendarDaoSpec extends Specification {
         .fromTime(LocalDateTime.parse('1710-05-05 10:00', formatter))
         .toTime(LocalDateTime.parse('1710-05-05 20:00', formatter))
         .visibility(Visibility.PRIVATE)
+        .recurrence(Recurrence.NONE)
         .participants(['Ekaterina I'])
         .build()
 
     when:
-    def id = calendarDao.createMeeting(meeting)
+    def ids = calendarDao.createMeeting(meeting)
 
     then:
+    ids.size() == 1
+    def id = ids[0].id
     id > 0
+    ids[0].subId == 1
+
     def res = db.rows("select * from meetings where id = ${id}")
+    res.size() == 1
     res[0]['ID'] == id
+    res[0]['SUB_ID'] == 1
     res[0]['MEETING_TITLE'] == meeting.title
     res[0]['ORGANIZER'] == meeting.organizer
     res[0]['LOCATION'] == meeting.location
     res[0]['VISIBILITY'] == meeting.visibility.name()
+    res[0]['RECURRENCE'] == meeting.recurrence.name()
     res[0]['FROM_TIME'].toLocalDateTime() == meeting.fromTime
     res[0]['TO_TIME'].toLocalDateTime() == meeting.toTime
 
     def event1 = db.rows("select * from calendar where meeting_id = ${id} and user_email = 'Ekaterina I'")
     Long.parseLong(event1[0]['MEETING_ID'] as String) == id
+    event1[0]['MEETING_SUB_ID'] == -1
     event1[0]['USER_EMAIL'] == 'Ekaterina I'
     event1[0]['RESPONSE'] == 'TENTATIVE'
 
     def event2 = db.rows("select * from calendar where meeting_id = ${id} and user_email = 'Petr I'")
     Long.parseLong(event2[0]['MEETING_ID'] as String) == id
+    event2[0]['MEETING_SUB_ID'] == -1
     event2[0]['USER_EMAIL'] == 'Petr I'
+    event2[0]['RESPONSE'] == 'TENTATIVE'
+  }
+
+  @DatabaseSetup(value = "classpath:database/clean_db.xml", connection = "dbUnitDatabaseConnection")
+  def "Should create daily meeting with calendar events"() {
+    given:
+    def meeting = Meeting.builder()
+        .title('Clean teeth')
+        .organizer('Mother')
+        .location('Bathroom')
+        .fromTime(LocalDateTime.parse('2022-04-01 10:00', formatter))
+        .toTime(LocalDateTime.parse('2022-04-01 10:05', formatter))
+        .visibility(Visibility.PRIVATE)
+        .recurrence(Recurrence.DAILY)
+        .participants(['Father'])
+        .build()
+
+    when:
+    def ids = calendarDao.createMeeting(meeting)
+
+    then:
+    ids.size() == 7
+    def id = ids[0].id
+    id > 0
+
+    def res = db.rows("select * from meetings where id = ${id}")
+    res.size() == 7
+    res[0]['ID'] == id
+    res[0]['SUB_ID'] == 1
+    res[0]['MEETING_TITLE'] == meeting.title
+    res[0]['ORGANIZER'] == meeting.organizer
+    res[0]['LOCATION'] == meeting.location
+    res[0]['VISIBILITY'] == meeting.visibility.name()
+    res[0]['RECURRENCE'] == meeting.recurrence.name()
+    res[0]['FROM_TIME'].toLocalDateTime() == meeting.fromTime
+    res[0]['TO_TIME'].toLocalDateTime() == meeting.toTime
+
+    res[6]['ID'] == id
+    res[6]['SUB_ID'] == 7
+    res[6]['MEETING_TITLE'] == meeting.title
+    res[6]['ORGANIZER'] == meeting.organizer
+    res[6]['LOCATION'] == meeting.location
+    res[6]['VISIBILITY'] == meeting.visibility.name()
+    res[6]['RECURRENCE'] == meeting.recurrence.name()
+    res[6]['FROM_TIME'].toLocalDateTime() == LocalDateTime.parse('2022-04-07 10:00', formatter)
+    res[6]['TO_TIME'].toLocalDateTime() == LocalDateTime.parse('2022-04-07 10:05', formatter)
+
+    def event1 = db.rows("select * from calendar where meeting_id = ${id} and user_email = 'Mother'")
+    event1.size() == 1
+    Long.parseLong(event1[0]['MEETING_ID'] as String) == id
+    event1[0]['MEETING_SUB_ID'] == -1
+    event1[0]['USER_EMAIL'] == 'Mother'
+    event1[0]['RESPONSE'] == 'TENTATIVE'
+
+    def event2 = db.rows("select * from calendar where meeting_id = ${id} and user_email = 'Father'")
+    event2.size() == 1
+    Long.parseLong(event2[0]['MEETING_ID'] as String) == id
+    event2[0]['MEETING_SUB_ID'] == -1
+    event2[0]['USER_EMAIL'] == 'Father'
     event2[0]['RESPONSE'] == 'TENTATIVE'
   }
 
@@ -79,9 +149,10 @@ class H2CalendarDaoSpec extends Specification {
   def "Should return meeting details"() {
     given:
     def meetingId = 1
+    def meetingSubId = 1
 
     when:
-    def optional = calendarDao.getMeetingDetails(meetingId)
+    def optional = calendarDao.getMeetingDetails(meetingId, meetingSubId)
 
     then:
     optional.isPresent()
@@ -102,9 +173,10 @@ class H2CalendarDaoSpec extends Specification {
   def "Any user is permitted to see public meeting"() {
     given:
     def meetingId = 2
+    def meetingSubId = 1
 
     when:
-    def res = calendarDao.isPermitted(user, meetingId)
+    def res = calendarDao.isPermitted(user, meetingId, meetingSubId)
 
     then:
     res
@@ -117,9 +189,10 @@ class H2CalendarDaoSpec extends Specification {
   def "Only participant is permitted to see private meeting"() {
     given:
     def meetingId = 1
+    def meetingSubId = 1
 
     when:
-    def res = calendarDao.isPermitted(user, meetingId)
+    def res = calendarDao.isPermitted(user, meetingId, meetingSubId)
 
     then:
     res == expected

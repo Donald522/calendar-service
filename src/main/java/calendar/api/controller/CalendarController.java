@@ -5,6 +5,7 @@ import calendar.api.dto.*;
 import calendar.service.CalendarService;
 import calendar.service.converter.*;
 import calendar.service.model.Meeting;
+import calendar.service.model.MeetingId;
 import calendar.service.model.MeetingSummary;
 import calendar.service.model.TimeSlot;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,16 +33,16 @@ public class CalendarController implements CalendarApi {
   private final CalendarService calendarService;
 
   @Override
-  public ResponseEntity<Long> createMeeting(MeetingDto meetingDto) {
-    long id = calendarService.createMeeting(meetingConverter.toModel(meetingDto));
-    return ResponseEntity.created(URI.create(String.format("/meetings/%s", id))).build();
+  public ResponseEntity<Collection<MeetingId>> createMeeting(MeetingDto meetingDto) {
+    Collection<MeetingId> ids = calendarService.createMeeting(meetingConverter.toModel(meetingDto));
+    return ResponseEntity.ok(ids);
   }
 
   @Override
-  public ResponseEntity<MeetingDto> getMeetingDetails(Long meetingId) {
+  public ResponseEntity<MeetingDto> getMeetingDetails(Long meetingId, Long meetingSubId) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    Meeting meeting = calendarService.getMeeting(authentication.getName(), meetingId);
+    Meeting meeting = calendarService.getMeeting(authentication.getName(), meetingId, meetingSubId);
     return ResponseEntity.ok(meetingConverter.toDto(meeting));
   }
 

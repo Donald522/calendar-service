@@ -34,7 +34,7 @@ public class CalendarServiceImpl implements CalendarService {
   private final CurrentDateProvider currentDateProvider;
 
   @Autowired
-  public CalendarServiceImpl(@Value("${calendar.minimal.meeting.slot.minutes}") long minimalTimeSlot,
+  public CalendarServiceImpl(@Value("${calendar.minimal.meeting.slot.minutes:30}") long minimalTimeSlot,
                              CalendarDao calendarDao, UserDao userDao,
                              UserCalendarAdapter userCalendarAdapter,
                              CurrentDateProvider currentDateProvider) {
@@ -47,9 +47,9 @@ public class CalendarServiceImpl implements CalendarService {
 
   @Override
   @Transactional
-  public long createMeeting(Meeting meeting) {
+  public Collection<MeetingId> createMeeting(Meeting meeting) {
     log.info("Creating new meeting [{}]", meeting.getTitle());
-    long meetingDuration = Duration.between(meeting.getToTime(), meeting.getFromTime()).toMinutes();
+    long meetingDuration = Duration.between(meeting.getFromTime(), meeting.getToTime()).toMinutes();
     if (meetingDuration < minimalTimeSlot) {
       log.warn("Cannot create meeting with duration: [{}] minutes. It is less than minimal slot: [{}] minutes",
           meetingDuration, minimalTimeSlot);
@@ -69,12 +69,12 @@ public class CalendarServiceImpl implements CalendarService {
 
   @Override
   @Transactional
-  public Meeting getMeeting(String requestor, long meetingId) {
+  public Meeting getMeeting(String requestor, long meetingId, long meetingSubId) {
     log.info("Retrieving details for meeting [{}]", meetingId);
     Optional<Meeting> meeting;
     boolean permitted;
     try {
-      permitted = calendarDao.isPermitted(requestor, meetingId);
+      permitted = calendarDao.isPermitted(requestor, meetingId, meetingSubId);
     } catch (Exception e) {
       log.error("Cannot retrieve meeting with id = {}", meetingId, e);
       throw new InternalServiceException(String.format(
@@ -86,7 +86,7 @@ public class CalendarServiceImpl implements CalendarService {
       ));
     }
     try {
-      meeting = calendarDao.getMeetingDetails(meetingId);
+      meeting = calendarDao.getMeetingDetails(meetingId, meetingSubId);
     } catch (Exception e) {
       log.error("Cannot retrieve meeting with id = {}", meetingId, e);
       throw new InternalServiceException(String.format(

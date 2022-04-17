@@ -7,9 +7,9 @@ import java.util.Collection;
 
 public interface CalendarService {
 
-  long createMeeting(Meeting meeting);
+  Collection<MeetingId> createMeeting(Meeting meeting);
 
-  Meeting getMeeting(String requestor, long meetingId);
+  Meeting getMeeting(String requestor, long meetingId, long meetingSubId);
 
   Collection<MeetingSummary> getCalendarForUser(String requestor, String user, LocalDateTime fromTime, LocalDateTime toTime);
 

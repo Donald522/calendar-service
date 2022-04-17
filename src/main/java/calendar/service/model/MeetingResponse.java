@@ -8,6 +8,7 @@ import lombok.Value;
 public class MeetingResponse {
 
   long meetingId;
+  long meetingSubId;
   String user;
   Response response;
 }

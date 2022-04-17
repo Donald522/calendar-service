@@ -1,0 +1,54 @@
+<dataset>
+    <users/>
+    <meetings
+            id="1"
+            sub_id="1"
+            meeting_title="Training"
+            organizer="yoda@mag.ru"
+            location="Dagobah"
+            from_time="1980-05-25 16:00:00"
+            to_time="1980-05-25 20:00:00"
+            visibility="PRIVATE"
+            recurrence="DAILY"/>
+    <meetings
+            id="1"
+            sub_id="2"
+            meeting_title="Training"
+            organizer="yoda@mag.ru"
+            location="Dagobah"
+            from_time="1980-05-26 16:00:00"
+            to_time="1980-05-26 20:00:00"
+            visibility="PRIVATE"
+            recurrence="DAILY"/>
+    <meetings
+            id="1"
+            sub_id="3"
+            meeting_title="Training"
+            organizer="yoda@mag.ru"
+            location="Dagobah"
+            from_time="1980-05-27 16:00:00"
+            to_time="1980-05-27 20:00:00"
+            visibility="PRIVATE"
+            recurrence="DAILY"/>
+    <meetings
+            id="1"
+            sub_id="4"
+            meeting_title="Training"
+            organizer="yoda@mag.ru"
+            location="Dagobah"
+            from_time="1980-05-28 16:00:00"
+            to_time="1980-05-28 20:00:00"
+            visibility="PRIVATE"
+            recurrence="DAILY"/>
+
+    <calendar
+            meeting_id="1"
+            meeting_sub_id="-1"
+            user_email="luk.skywalker@reb.com"
+            response="ACCEPTED"/>
+    <calendar
+            meeting_id="1"
+            meeting_sub_id="2"
+            user_email="luk.skywalker@reb.com"
+            response="DECLINED"/>
+</dataset>

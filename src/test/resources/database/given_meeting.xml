@@ -2,12 +2,14 @@
     <users/>
     <meetings
             id="1"
+            sub_id="1"
             meeting_title="Standup"
             organizer="dart.vader@imp.com"
             location="Endor"
             from_time="1983-05-25 12:00:00"
             to_time="1983-05-25 12:30:00"
             visibility="PRIVATE"
+            recurrence="NONE"
     />
     <calendar
             meeting_id="1"

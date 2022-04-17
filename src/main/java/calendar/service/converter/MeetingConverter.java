@@ -3,6 +3,7 @@ package calendar.service.converter;
 import calendar.api.dto.MeetingDto;
 import calendar.service.exception.BadRequestException;
 import calendar.service.model.Meeting;
+import calendar.service.model.Recurrence;
 import calendar.service.model.Visibility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +28,7 @@ public class MeetingConverter {
           .toTime(dateTimeConverter.parseDate(dto.getToTime()))
           .message(dto.getMessage())
           .visibility(Visibility.valueOf(dto.getVisibility()))
+          .recurrence(Recurrence.valueOf(dto.getRecurrence()))
           .participants(dto.getParticipants())
           .build();
     } catch (IllegalArgumentException e) {
@@ -48,6 +50,7 @@ public class MeetingConverter {
         .toTime(dateTimeConverter.formatDate(model.getToTime()))
         .message(model.getMessage())
         .visibility(model.getVisibility().name())
+        .recurrence(model.getRecurrence().name())
         .participants(model.getParticipants())
         .build();
   }

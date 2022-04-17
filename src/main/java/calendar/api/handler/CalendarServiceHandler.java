@@ -41,4 +41,9 @@ public class CalendarServiceHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handlePermissionException(PermissionException ex, WebRequest request) {
     return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
   }
+
+  @ExceptionHandler(value = UnsupportedOperationException.class)
+  protected ResponseEntity<Object> handleUnsupportedOperationException(UnsupportedOperationException ex, WebRequest request) {
+    return handleExceptionInternal(ex, new ErrorMessage(ex.getMessage()), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+  }
 }

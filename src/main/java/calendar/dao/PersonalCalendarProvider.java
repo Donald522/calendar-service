@@ -17,7 +17,8 @@ public class PersonalCalendarProvider implements UserCalendarProvider {
   @Override
   public Collection<MeetingSummary> getUserCalendar(String user, LocalDateTime from, LocalDateTime to) {
     String selectUSerCalendarSql =
-        "select c.meeting_id, \n" +
+        "select m.id, \n" +
+            "   m.sub_id, \n" +
             "   m.meeting_title, \n" +
             "   m.organizer,\n" +
             "   m.from_time,\n" +
@@ -29,11 +30,14 @@ public class PersonalCalendarProvider implements UserCalendarProvider {
             "  and from_time < ?\n" +
             "  and to_time > ?\n" +
             "  and not exists (select 1 from calendar cc\n" +
-            "                  where cc.meeting_id = c.meeting_id\n" +
+            "                  where cc.meeting_id = m.id\n" +
+            "                    and (cc.meeting_sub_id = m.sub_id or cc.meeting_sub_id < 0) \n" +
             "                    and cc.user_email = c.user_email\n" +
             "                    and cc.response = 'DECLINED')\n" +
-            "  and c.meeting_id = m.id\n" +
-            "group by c.meeting_id, \n" +
+            "  and c.meeting_id = m.id \n" +
+            "  and (m.sub_id = c.meeting_sub_id or c.meeting_sub_id < 0) \n" +
+            "group by m.id, \n" +
+            "         m.sub_id, \n" +
             "         m.meeting_title, \n" +
             "         m.organizer,\n" +
             "         m.from_time,\n" +

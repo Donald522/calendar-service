@@ -13,6 +13,7 @@ import java.util.Collection;
 public class Meeting {
 
   long id;
+  long subId;
   String title;
   String organizer;
   String location;
@@ -20,5 +21,6 @@ public class Meeting {
   LocalDateTime toTime;
   String message;
   Visibility visibility;
+  Recurrence recurrence;
   Collection<String> participants;
 }

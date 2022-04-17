@@ -17,6 +17,7 @@ public class MeetingSummaryConverter {
   public MeetingSummaryDto toDto(MeetingSummary model) {
     return MeetingSummaryDto.builder()
         .meetingId(model.getMeetingId())
+        .meetingSubId(model.getMeetingSubId())
         .title(model.getTitle())
         .organizer(model.getOrganizer())
         .fromTime(dateTimeConverter.formatDate(model.getFromTime()))

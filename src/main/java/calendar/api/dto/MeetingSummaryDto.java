@@ -12,6 +12,7 @@ import lombok.Value;
 public class MeetingSummaryDto {
 
   Long meetingId;
+  Long meetingSubId;
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   String title;
@@ -24,11 +25,13 @@ public class MeetingSummaryDto {
 
   @JsonCreator
   public MeetingSummaryDto(@JsonProperty(value = "meetingId", required = true) Long meetingId,
+                           @JsonProperty(value = "meetingSubId", required = true) Long meetingSubId,
                            @JsonProperty(value = "title") String title,
                            @JsonProperty(value = "organizer") String organizer,
                            @JsonProperty(value = "fromTime", required = true) String fromTime,
                            @JsonProperty(value = "toTime", required = true) String toTime) {
     this.meetingId = meetingId;
+    this.meetingSubId = meetingSubId;
     this.title = title;
     this.organizer = organizer;
     this.fromTime = fromTime;

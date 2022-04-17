@@ -2,12 +2,12 @@
   "name": "Kristina",
   "surname": "Petrova",
   "email": "kris.petrova@d.ru",
-  "password": "asd123"
+  "password": "qwerty"
 }
 
 {
-  "name": "anton",
-  "surname": "ivanov",
+  "name": "Anton",
+  "surname": "Ivanov",
   "email": "anton.ivanov@g.ru",
   "password": "qwerty"
 }
@@ -15,31 +15,49 @@
 {
   "name": "Victor",
   "surname": "Kiselev",
-  "email": "victor.kis@y.ru"
+  "email": "victor.kiselev@y.ru",
+  "password": "qwerty"
 }
-
 
 {
   "title": "Standup",
-  "organizer": "kris.petrova@d.r",
+  "organizer": "kris.petrova@d.ru",
   "fromTime": "2022-04-15 11:00",
-  "toTime": "2022-04-15 12:30",
-  "location": "",
-  "message": "",
+  "toTime": "2022-04-15 11:30",
+  "location": "Skype",
+  "visibility": "PUBLIC",
   "participants": [
-    "anton.ivanov@gm.ru",
-    "victor.kis@y.ru"
-  ]
+    "anton.ivanov@g.ru",
+    "victor.kiselev@y.ru",
+    "petr.petrov@y.ru"
+  ],
+  "recurrence": "DAILY"
 }
 
 {
-  "title": "Spring demo",
-  "organizer": "anton.ivanov@gm.ru",
-  "fromTime": "2022-04-15 16:00",
-  "toTime": "2022-04-15 16:30",
-  "location": "",
-  "message": "agenda",
+  "title": "Spring Demo",
+  "organizer": "kris.petrova@d.ru",
+  "fromTime": "2022-04-18 15:00",
+  "toTime": "2022-04-18 16:00",
+  "location": "Skype",
+  "visibility": "PUBLIC",
   "participants": [
-    "victor.kis@y.ru"
-  ]
+    "anton.ivanov@g.ru",
+    "victor.kiselev@y.ru",
+    "petr.petrov@y.ru"
+  ],
+  "recurrence": "NONE"
+}
+
+{
+  "title": "One-2-One",
+  "organizer": "kris.petrova@d.ru",
+  "fromTime": "2022-04-18 12:00",
+  "toTime": "2022-04-18 12:30",
+  "location": "Room",
+  "visibility": "PRIVATE",
+  "participants": [
+    "petr.petrov@y.ru"
+  ],
+  "recurrence": "NONE"
 }

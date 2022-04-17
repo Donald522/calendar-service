@@ -17,6 +17,7 @@ public class MeetingResponseConverter {
     try {
       return MeetingResponse.builder()
           .meetingId(dto.getMeetingId())
+          .meetingSubId(dto.getMeetingSubId())
           .user(dto.getUser())
           .response(Response.valueOf(dto.getResponse().toUpperCase()))
           .build();
