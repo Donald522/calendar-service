@@ -4,5 +4,7 @@ public enum Recurrence {
   NONE,
   DAILY,
   WEEKDAYS,
-  WEEKLY
+  WEEKLY,
+  MONTHLY,
+  YEARLY
 }

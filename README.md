@@ -19,7 +19,7 @@ Application has couple of settings
 |----|----|
 |calendar.service.security.enabled| When property is set to true it is only available to create new user w/o entering credentials|
 |calendar.minimal.meeting.slot.minutes | Sets the minimal meeting time |
-|calendar.recurrence.duration.days| For DAILY meetings controls the last meeting date| 
+|calendar.recurrence.duration.events| For recurrent meetings specifies how many meetings will be created| 
 
 #### Start application
 -From IDE:
@@ -68,7 +68,11 @@ When new meeting is created all participants have 'TENTATIVE' status and are con
 
 Supported recurrence values: 
 - NONE (meeting occurs once)
-- DAILY (meeting occurs every day starting from ${fromTime} during ${calendar.recurrence.duration.days} days)
+- DAILY (meeting occurs every day starting from ${fromTime} during ${calendar.recurrence.duration.events} days)
+- WEEKDAYS (meeting occurs every day from Monday to Friday)
+- WEEKLY (meeting occurs once a week)
+- MONTHLY (meeting occurs once a month on specific day, ex.: each 3rd Monday of month)
+- YEARLY (meeting occurs once a year)
 
 Supported visibility values:
 - PUBLIC (everyone can see meeting details)
